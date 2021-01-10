@@ -1,4 +1,4 @@
-package com.example.reports_manager
+package io.srhdev.reportsmanager
 
 import io.flutter.embedding.android.FlutterActivity
 
