@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "956770243789",
+    "project_id": "reports-manager-78179",
+    "storage_bucket": "reports-manager-78179.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:956770243789:android:6c10c3aaba864313cb0584",
+        "android_client_info": {
+          "package_name": "io.srhdev.reportsmanager"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "956770243789-o4sga7p30f7sq2n6b47lvtutrnk8vkga.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "io.srhdev.reportsmanager",
+            "certificate_hash": "70796b7aad7c30e1d18883a757c71778c38c05f8"
+          }
+        },
+        {
+          "client_id": "956770243789-no2an9siep238e4isdjpmuq8qu4na01a.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCefBE70GsNoLp8jFQXNWBnZDqkX2vxg4A"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "956770243789-no2an9siep238e4isdjpmuq8qu4na01a.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
