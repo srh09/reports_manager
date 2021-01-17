@@ -2,12 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:reports_manager/utilities/constants.dart';
 
-class LoginScreen extends StatefulWidget {
+class SigninScreen extends StatefulWidget {
+  static const routeName = '/signin';
+
   @override
-  _LoginScreenState createState() => _LoginScreenState();
+  _SigninScreenState createState() => _SigninScreenState();
 }
 
-class _LoginScreenState extends State<LoginScreen> {
+class _SigninScreenState extends State<SigninScreen> {
   var _rememberMe = false;
 
   Widget _buildEmailInput() {
