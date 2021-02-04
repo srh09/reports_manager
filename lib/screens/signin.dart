@@ -1,5 +1,8 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:reports_manager/screens/jobsites.dart';
+import 'package:reports_manager/services/auth.dart';
 import 'package:reports_manager/utilities/constants.dart';
 
 class SigninScreen extends StatefulWidget {
@@ -11,6 +14,19 @@ class SigninScreen extends StatefulWidget {
 
 class _SigninScreenState extends State<SigninScreen> {
   var _rememberMe = false;
+  AuthService authService = AuthService();
+
+  @override
+  void initState() {
+    super.initState();
+    authService.user.listen(
+      (User user) {
+        if (user != null) {
+          Navigator.pushReplacementNamed(context, JobsitesScreen.routeName);
+        }
+      },
+    );
+  }
 
   Widget _buildEmailInput() {
     return Column(
@@ -142,7 +158,9 @@ class _SigninScreenState extends State<SigninScreen> {
     return Container(
       padding: EdgeInsets.symmetric(vertical: 20.0),
       child: GestureDetector(
-        onTap: () => print('login with google'),
+        onTap: () async {
+          var user = await authService.signInWithGoogle();
+        },
         child: Container(
           height: 60.0,
           width: 60.0,

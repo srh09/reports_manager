@@ -5,6 +5,9 @@ class JobsitesScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container();
+    return Scaffold(
+      appBar: AppBar(title: Text('Jobsites')),
+      body: Center(child: Text('placeholder')),
+    );
   }
 }
