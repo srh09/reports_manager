@@ -14,3 +14,5 @@ flutter run
 
 ## License
 MIT SRH(srh09) 2021
+
+See ThirdPartyNotices.txt for attribution.
