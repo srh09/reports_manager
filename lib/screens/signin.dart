@@ -1,9 +1,10 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:reports_manager/screens/jobsites.dart';
-import 'package:reports_manager/services/auth.dart';
-import 'package:reports_manager/utilities/constants.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+
+import 'signup.dart';
+import '../services/auth.dart';
+import 'jobsites.dart';
 
 class SigninScreen extends StatefulWidget {
   static const routeName = '/signin';
@@ -13,8 +14,11 @@ class SigninScreen extends StatefulWidget {
 }
 
 class _SigninScreenState extends State<SigninScreen> {
-  var _rememberMe = false;
   AuthService authService = AuthService();
+  final _formKey = GlobalKey<FormState>();
+  final TextEditingController emailController = TextEditingController();
+  final TextEditingController passwordController = TextEditingController();
+  var _errorMessage = '';
 
   @override
   void initState() {
@@ -28,252 +32,168 @@ class _SigninScreenState extends State<SigninScreen> {
     );
   }
 
-  Widget _buildEmailInput() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text('Email', style: labelStyle),
-        SizedBox(height: 10),
-        Container(
-          alignment: Alignment.centerLeft,
-          decoration: boxDecorationStyle,
-          height: 60.0,
-          child: TextField(
-            keyboardType: TextInputType.emailAddress,
-            style: TextStyle(color: Colors.white, fontFamily: 'OpenSans'),
-            decoration: InputDecoration(
-              border: InputBorder.none,
-              contentPadding: EdgeInsets.only(top: 14.0),
-              prefixIcon: Icon(Icons.email, color: Colors.white),
-              hintText: 'Enter your Email',
-              hintStyle: hintTextStyle,
-            ),
-          ),
-        )
-      ],
-    );
-  }
-
-  Widget _buildPasswordInput() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text('Password', style: labelStyle),
-        SizedBox(height: 10),
-        Container(
-          alignment: Alignment.centerLeft,
-          decoration: boxDecorationStyle,
-          height: 60.0,
-          child: TextField(
-            obscureText: true,
-            style: TextStyle(color: Colors.white, fontFamily: 'OpenSans'),
-            decoration: InputDecoration(
-              border: InputBorder.none,
-              contentPadding: EdgeInsets.only(top: 14.0),
-              prefixIcon: Icon(Icons.lock, color: Colors.white),
-              hintText: 'Enter your Password',
-              hintStyle: hintTextStyle,
-            ),
-          ),
-        )
-      ],
-    );
-  }
-
-  Widget _buildRememberMeCheckbox() {
-    return Container(
-      child: Row(
-        children: <Widget>[
-          Theme(
-            data: ThemeData(unselectedWidgetColor: Colors.white),
-            child: Checkbox(
-              value: _rememberMe,
-              checkColor: Colors.grey[600],
-              activeColor: Colors.white,
-              onChanged: (value) => setState(() => _rememberMe = value),
-            ),
-          ),
-          Text('Remember Me', style: labelStyle),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildForgotPasswordLink() {
-    return Container(
-      alignment: Alignment.centerRight,
-      child: FlatButton(
-        onPressed: () => print('Forgot Password Button Pressed'),
-        child: Text(
-          'Forgot Password?',
-          style: labelStyle,
-        ),
-      ),
-    );
-  }
-
-  Widget _buildLoginButton() {
-    return Container(
-      padding: EdgeInsets.symmetric(vertical: 25.0),
-      width: double.infinity,
-      child: RaisedButton(
-        elevation: 5.0,
-        onPressed: () => print('login button pressed'),
-        padding: EdgeInsets.all(15.0),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(30.0),
-        ),
-        color: Colors.white,
-        child: Text(
-          'LOGIN',
-          style: TextStyle(
-            color: Colors.grey[700],
-            letterSpacing: 1.5,
-            fontSize: 18.0,
-            fontWeight: FontWeight.bold,
-            fontFamily: 'OpenSans',
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildSignInWithText() {
-    return Column(
-      children: <Widget>[
-        Text(
-          '- OR -',
-          style: TextStyle(
-            color: Colors.white,
-            fontWeight: FontWeight.w400,
-          ),
-        ),
-        SizedBox(height: 20),
-        Text('Sign in with', style: labelStyle)
-      ],
-    );
-  }
-
-  Widget _buildSignInWithGoogleButton() {
-    return Container(
-      padding: EdgeInsets.symmetric(vertical: 20.0),
-      child: GestureDetector(
-        onTap: () async {
-          var user = await authService.signInWithGoogle();
-        },
-        child: Container(
-          height: 60.0,
-          width: 60.0,
-          decoration: BoxDecoration(
-            shape: BoxShape.circle,
-            color: Colors.white,
-            image: DecorationImage(
-              scale: 10.0,
-              image: AssetImage('assets/graphics/google.png'),
-            ),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black26,
-                offset: Offset(0, 3),
-                blurRadius: 6.0,
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildSignUpButton() {
-    return GestureDetector(
-      onTap: () => print('sign up button pressed'),
-      child: RichText(
-        text: TextSpan(
-          children: [
-            TextSpan(
-              text: 'Don\'t have an account? ',
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 18.0,
-                fontWeight: FontWeight.w400,
-              ),
-            ),
-            TextSpan(
-              text: 'Sign Up',
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 18.0,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
+  void resetErrorMsg() {
+    setState(() => _errorMessage = '');
   }
 
   @override
   Widget build(BuildContext context) {
+    final node = FocusScope.of(context);
+
+    emailController.addListener(resetErrorMsg);
+    passwordController.addListener(resetErrorMsg);
+
+    Widget _buildHeroLogo() {
+      return Hero(
+        tag: 'hero',
+        child: CircleAvatar(
+          backgroundColor: Colors.transparent,
+          radius: 48.0,
+          // child: Image.asset('assets/logo.png'),
+          child: FlutterLogo(
+            size: 100,
+          ),
+        ),
+      );
+    }
+
+    Widget _buildErrorDisplay() {
+      return Padding(
+        padding: EdgeInsets.symmetric(horizontal: 8.0, vertical: 20.0),
+        child: Text(
+          '$_errorMessage',
+          style: TextStyle(fontSize: 14.0, color: Colors.red),
+          textAlign: TextAlign.center,
+        ),
+      );
+    }
+
+    Widget _buildEmailInput() {
+      return TextFormField(
+        validator: (value) {
+          if (value.isEmpty || !value.contains('@')) {
+            return 'Please enter a valid email.';
+          }
+          return null;
+        },
+        keyboardType: TextInputType.emailAddress,
+        autofocus: false,
+        controller: emailController,
+        decoration: InputDecoration(
+          hintText: 'Email',
+          contentPadding: EdgeInsets.symmetric(
+            horizontal: 20.0,
+            vertical: 10.0,
+          ),
+          border: OutlineInputBorder(borderRadius: BorderRadius.circular(32.0)),
+        ),
+        textInputAction: TextInputAction.next,
+        onEditingComplete: () => node.nextFocus(),
+      );
+    }
+
+    Widget _buildPasswordInput() {
+      return TextFormField(
+        autofocus: false,
+        obscureText: true,
+        controller: passwordController,
+        textInputAction: TextInputAction.done,
+        onFieldSubmitted: (v) {
+          FocusScope.of(context).requestFocus(node);
+        },
+        decoration: InputDecoration(
+          hintText: 'Password',
+          contentPadding:
+              EdgeInsets.symmetric(horizontal: 20.0, vertical: 10.0),
+          border: OutlineInputBorder(borderRadius: BorderRadius.circular(32.0)),
+        ),
+      );
+    }
+
+    Widget _buildLoginButton() {
+      return Padding(
+        padding: EdgeInsets.symmetric(vertical: 10.0),
+        child: RaisedButton(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(24),
+          ),
+          onPressed: () {
+            if (_formKey.currentState.validate()) {
+              authService.signInWithEmailPassword(
+                  emailController.text, passwordController.text);
+            }
+          },
+          padding: EdgeInsets.all(12),
+          color: Colors.lightBlueAccent,
+          child: Text('Log In', style: TextStyle(color: Colors.white)),
+        ),
+      );
+    }
+
+    Widget _buildRegisterButton() {
+      return Padding(
+        padding: EdgeInsets.zero,
+        child: RaisedButton(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(24),
+          ),
+          onPressed: () {
+            Navigator.of(context).pushNamed(SignupScreen.routeName);
+          },
+          padding: EdgeInsets.all(12),
+          color: Colors.lightGreen,
+          child: Text('Register', style: TextStyle(color: Colors.white)),
+        ),
+      );
+    }
+
+    Widget _buildForgotPasswordLabel() {
+      return FlatButton(
+        child: Text(
+          'Forgot password?',
+          style: TextStyle(color: Colors.black54),
+        ),
+        onPressed: () {},
+      );
+    }
+
     return Scaffold(
-      body: AnnotatedRegion<SystemUiOverlayStyle>(
-        value: SystemUiOverlayStyle.light,
-        child: GestureDetector(
-          onTap: () => FocusScope.of(context).unfocus(),
-          child: Stack(
+      backgroundColor: Colors.white,
+      body: Center(
+        child: Form(
+          key: _formKey,
+          child: ListView(
+            shrinkWrap: true,
+            padding: EdgeInsets.symmetric(horizontal: 25.0),
             children: <Widget>[
-              Container(
-                height: double.infinity,
-                width: double.infinity,
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    begin: Alignment.topCenter,
-                    end: Alignment.bottomCenter,
-                    colors: [
-                      Colors.grey[600],
-                      Colors.grey[700],
-                      Colors.grey[800],
-                      Colors.grey[850],
-                    ],
-                    stops: [0.1, 0.4, 0.7, 0.9],
-                  ),
-                ),
-              ),
-              Container(
-                height: double.infinity,
-                child: SingleChildScrollView(
-                  physics: AlwaysScrollableScrollPhysics(),
-                  padding:
-                      EdgeInsets.symmetric(horizontal: 40.0, vertical: 60.0),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text(
-                        'Sign In',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontFamily: 'OpenSans',
-                          fontSize: 30,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      SizedBox(height: 30.0),
-                      _buildEmailInput(),
-                      SizedBox(height: 30.0),
-                      _buildPasswordInput(),
-                      _buildForgotPasswordLink(),
-                      _buildRememberMeCheckbox(),
-                      _buildLoginButton(),
-                      _buildSignInWithText(),
-                      _buildSignInWithGoogleButton(),
-                      _buildSignUpButton(),
-                    ],
-                  ),
-                ),
-              ),
+              _buildHeroLogo(),
+              _buildErrorDisplay(),
+              _buildEmailInput(),
+              _buildPasswordInput(),
+              _buildLoginButton(),
+              _buildRegisterButton(),
+              _buildForgotPasswordLabel(),
             ],
           ),
         ),
       ),
     );
+  }
+
+  void processError(final PlatformException error) {
+    if (error.code == "ERROR_USER_NOT_FOUND") {
+      setState(() {
+        _errorMessage = "Unable to find user. Please register.";
+      });
+    } else if (error.code == "ERROR_WRONG_PASSWORD") {
+      setState(() {
+        _errorMessage = "Incorrect password.";
+      });
+    } else {
+      setState(() {
+        _errorMessage =
+            "There was an error logging in. Please try again later.";
+      });
+    }
   }
 }

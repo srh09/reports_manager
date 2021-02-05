@@ -9,12 +9,12 @@ class AuthService {
 
   Stream<User> get user => _auth.authStateChanges();
 
-  Future<User> registerWithEmailPassword() async {
+  Future<User> registerWithEmailPassword(String email, String password) async {
     try {
       UserCredential userCredential =
           await FirebaseAuth.instance.createUserWithEmailAndPassword(
-        email: "barry.allen@example.com",
-        password: "SuperSecretPassword!",
+        email: email,
+        password: password,
       );
       User user = userCredential.user;
       return user;
@@ -24,17 +24,19 @@ class AuthService {
       } else if (e.code == 'email-already-in-use') {
         print('The account already exists for that email.');
       }
+      return null;
     } catch (e) {
       print(e);
+      return null;
     }
   }
 
-  Future<User> signInWithEmailPassword() async {
+  Future<User> signInWithEmailPassword(String email, String password) async {
     try {
       UserCredential userCredential =
           await FirebaseAuth.instance.signInWithEmailAndPassword(
-        email: "barry.allen@example.com",
-        password: "SuperSecretPassword!",
+        email: email,
+        password: password,
       );
       User user = userCredential.user;
       return user;
@@ -44,8 +46,10 @@ class AuthService {
       } else if (e.code == 'wrong-password') {
         print('Wrong password provided for that user.');
       }
+      return null;
     } catch (e) {
       print(e);
+      return null;
     }
   }
 
