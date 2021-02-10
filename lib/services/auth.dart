@@ -1,6 +1,9 @@
+import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+
+import '../utilities/helpers.dart';
 
 class AuthService {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
@@ -31,7 +34,8 @@ class AuthService {
     }
   }
 
-  Future<User> signInWithEmailPassword(String email, String password) async {
+  Future<User> signInWithEmailPassword(
+      BuildContext context, String email, String password) async {
     try {
       UserCredential userCredential =
           await FirebaseAuth.instance.signInWithEmailAndPassword(
@@ -42,7 +46,7 @@ class AuthService {
       return user;
     } on FirebaseAuthException catch (e) {
       if (e.code == 'user-not-found') {
-        print('No user found for that email.');
+        Helpers.createAlertDialog(context, 'No user found for that email');
       } else if (e.code == 'wrong-password') {
         print('Wrong password provided for that user.');
       }

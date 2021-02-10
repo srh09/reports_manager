@@ -19,95 +19,88 @@ class _SigninScreenState extends State<SigninScreen> {
   final _formKey = GlobalKey<FormState>();
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
-  var _errorMessage = '';
 
   @override
   void initState() {
     super.initState();
     authService.user.listen(
       (User user) {
-        if (user != null) {
+        if (user != null)
           Navigator.pushReplacementNamed(context, JobsitesScreen.routeName);
-        }
       },
     );
   }
 
-  void resetErrorMsg() {
-    setState(() => _errorMessage = '');
-  }
-
   Widget _buildHeroLogo() {
-    return Hero(
-      tag: 'hero',
-      child: CircleAvatar(
-        backgroundColor: Colors.transparent,
-        radius: 48.0,
-        // child: Image.asset('assets/logo.png'),
-        child: FlutterLogo(
-          size: 100,
-        ),
-      ),
-    );
-  }
-
-  Widget _buildErrorDisplay() {
     return Padding(
-      padding: EdgeInsets.symmetric(horizontal: 8.0, vertical: 20.0),
-      child: Text(
-        '$_errorMessage',
-        style: TextStyle(fontSize: 14.0, color: Colors.red),
-        textAlign: TextAlign.center,
+      padding: EdgeInsets.symmetric(vertical: 40.0),
+      child: Hero(
+        tag: 'hero',
+        child: CircleAvatar(
+          backgroundColor: Colors.transparent,
+          radius: 48.0,
+          // child: Image.asset('assets/logo.png'),
+          child: FlutterLogo(
+            size: 100,
+          ),
+        ),
       ),
     );
   }
 
   Widget _buildEmailInput() {
-    return TextFormField(
-      validator: (value) => Validators.email(value),
-      keyboardType: TextInputType.emailAddress,
-      autofocus: false,
-      controller: emailController,
-      decoration: InputDecoration(
-        hintText: 'Email',
-        contentPadding: EdgeInsets.symmetric(
-          horizontal: 20.0,
-          vertical: 10.0,
+    return Padding(
+      padding: EdgeInsets.only(bottom: 10.0),
+      child: TextFormField(
+        controller: emailController,
+        validator: (value) => Validators.email(value),
+        keyboardType: TextInputType.emailAddress,
+        textInputAction: TextInputAction.next,
+        decoration: InputDecoration(
+          hintText: 'Email',
+          contentPadding: EdgeInsets.symmetric(
+            horizontal: 20.0,
+            vertical: 10.0,
+          ),
+          border: OutlineInputBorder(borderRadius: BorderRadius.circular(32.0)),
         ),
-        border: OutlineInputBorder(borderRadius: BorderRadius.circular(32.0)),
       ),
-      textInputAction: TextInputAction.next,
-      // onEditingComplete: () => node.nextFocus(),
     );
   }
 
   Widget _buildPasswordInput() {
-    return TextFormField(
-      controller: passwordController,
-      textInputAction: TextInputAction.done,
-      onFieldSubmitted: (_) {
-        // FocusScope.of(context).requestFocus(node);
-      },
-      decoration: InputDecoration(
-        hintText: 'Password',
-        contentPadding: EdgeInsets.symmetric(horizontal: 20.0, vertical: 10.0),
-        border: OutlineInputBorder(borderRadius: BorderRadius.circular(32.0)),
+    return SizedBox(
+      height: 80.0,
+      child: TextFormField(
+        controller: passwordController,
+        validator: (value) => Validators.password(value),
+        textInputAction: TextInputAction.done,
+        onFieldSubmitted: (_) {
+          if (_formKey.currentState.validate()) {
+            // authService.signInWithEmailPassword(
+            //     emailController.text, passwordController.text);
+          }
+        },
+        decoration: InputDecoration(
+          hintText: 'Password',
+          contentPadding:
+              EdgeInsets.symmetric(horizontal: 20.0, vertical: 10.0),
+          border: OutlineInputBorder(borderRadius: BorderRadius.circular(32.0)),
+        ),
       ),
     );
   }
 
-  Widget _buildLoginButton() {
-    return Padding(
-      padding: EdgeInsets.symmetric(vertical: 10.0),
+  Widget _buildLoginButton(BuildContext context) {
+    return Container(
+      padding: EdgeInsets.only(top: 40.0),
+      width: double.infinity,
       child: RaisedButton(
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(24),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
         onPressed: () {
-          if (_formKey.currentState.validate()) {
+          if (_formKey.currentState.validate())
             authService.signInWithEmailPassword(
-                emailController.text, passwordController.text);
-          }
+                context, emailController.text, passwordController.text);
         },
         padding: EdgeInsets.all(12),
         color: Colors.lightBlueAccent,
@@ -117,8 +110,8 @@ class _SigninScreenState extends State<SigninScreen> {
   }
 
   Widget _buildRegisterButton() {
-    return Padding(
-      padding: EdgeInsets.zero,
+    return Container(
+      width: double.infinity,
       child: RaisedButton(
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(24),
@@ -134,44 +127,52 @@ class _SigninScreenState extends State<SigninScreen> {
   }
 
   Widget _buildForgotPasswordLabel() {
-    return FlatButton(
-      child: Text(
-        'Forgot password?',
-        style: TextStyle(color: Colors.black54),
+    return Padding(
+      padding: EdgeInsets.only(bottom: 40.0),
+      child: FlatButton(
+        child: Text(
+          'Forgot password?',
+          style: TextStyle(color: Colors.black54),
+        ),
+        onPressed: () {},
       ),
-      onPressed: () {},
     );
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: GestureDetector(
-        onTap: () => FocusScope.of(context).unfocus(),
-        child: Container(
-          color: Colors.white,
-          height: double.infinity,
-          alignment: Alignment.center,
-          child: SingleChildScrollView(
-            physics: AlwaysScrollableScrollPhysics(),
-            padding: EdgeInsets.symmetric(horizontal: 40.0),
-            child: Form(
-              key: _formKey,
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: <Widget>[
-                  _buildHeroLogo(),
-                  _buildErrorDisplay(),
-                  _buildEmailInput(),
-                  _buildPasswordInput(),
-                  _buildLoginButton(),
-                  _buildRegisterButton(),
-                  _buildForgotPasswordLabel(),
-                ],
+      body: LayoutBuilder(
+        builder: (BuildContext context, BoxConstraints viewportConstraints) {
+          return SingleChildScrollView(
+            child: ConstrainedBox(
+              constraints:
+                  BoxConstraints(minHeight: viewportConstraints.maxHeight),
+              child: GestureDetector(
+                onTap: () => FocusScope.of(context).unfocus(),
+                child: Container(
+                  color: Colors.white,
+                  padding: EdgeInsets.symmetric(horizontal: 40.0),
+                  alignment: Alignment.center,
+                  child: Form(
+                    key: _formKey,
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: <Widget>[
+                        _buildHeroLogo(),
+                        _buildEmailInput(),
+                        _buildPasswordInput(),
+                        _buildLoginButton(context),
+                        _buildRegisterButton(),
+                        _buildForgotPasswordLabel(),
+                      ],
+                    ),
+                  ),
+                ),
               ),
             ),
-          ),
-        ),
+          );
+        },
       ),
     );
   }
