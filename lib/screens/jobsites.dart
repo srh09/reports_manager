@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:reports_manager/screens/signin.dart';
 import 'package:reports_manager/services/auth.dart';
 
 class JobsitesScreen extends StatelessWidget {
   static const routeName = '/jobsites';
-  AuthService authService = AuthService();
 
   Widget _buildLogoutButton(BuildContext context) {
     return RaisedButton(
@@ -12,7 +12,7 @@ class JobsitesScreen extends StatelessWidget {
         borderRadius: BorderRadius.circular(24),
       ),
       onPressed: () async {
-        await authService.signOut();
+        await context.read<AuthService>().signOut();
         Navigator.of(context).pushNamedAndRemoveUntil(
           SigninScreen.routeName,
           (Route<dynamic> route) => false,

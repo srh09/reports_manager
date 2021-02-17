@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:provider/provider.dart';
+import 'package:reports_manager/utilities/helpers.dart';
 
 import '../services/auth.dart';
 import '../utilities/validators.dart';
@@ -15,21 +17,11 @@ class SigninScreen extends StatefulWidget {
 }
 
 class _SigninScreenState extends State<SigninScreen> {
-  AuthService authService = AuthService();
   final _formKey = GlobalKey<FormState>();
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
 
-  @override
-  void initState() {
-    super.initState();
-    authService.user.listen(
-      (User user) {
-        if (user != null)
-          Navigator.pushReplacementNamed(context, JobsitesScreen.routeName);
-      },
-    );
-  }
+  String errorMsg;
 
   Widget _buildHeroLogo() {
     return Padding(
@@ -97,10 +89,16 @@ class _SigninScreenState extends State<SigninScreen> {
       width: double.infinity,
       child: RaisedButton(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
-        onPressed: () {
-          if (_formKey.currentState.validate())
-            authService.signInWithEmailPassword(
-                context, emailController.text, passwordController.text);
+        onPressed: () async {
+          if (_formKey.currentState.validate()) {
+            errorMsg = await context
+                .read<AuthService>()
+                .signInWithEmailPassword(emailController.text.trim(),
+                    passwordController.text.trim());
+            if (errorMsg != null) {
+              Helpers.createAlertDialog(context, errorMsg, 'Error');
+            }
+          }
         },
         padding: EdgeInsets.all(12),
         color: Colors.lightBlueAccent,
@@ -141,6 +139,10 @@ class _SigninScreenState extends State<SigninScreen> {
 
   @override
   Widget build(BuildContext context) {
+    // context.watch<AuthService>().user.listen((User user) {
+    //   if (user != null)
+    //     Navigator.pushReplacementNamed(context, JobsitesScreen.routeName);
+    // });
     return Scaffold(
       body: LayoutBuilder(
         builder: (BuildContext context, BoxConstraints viewportConstraints) {

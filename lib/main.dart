@@ -10,7 +10,7 @@ import 'package:reports_manager/services/auth.dart';
 
 import 'screens/signin.dart';
 
-void main() async {
+Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
   runApp(App());
@@ -21,7 +21,9 @@ class App extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
-        StreamProvider<User>.value(value: AuthService().user),
+        Provider<AuthService>(
+            create: (_) => AuthService(FirebaseAuth.instance)),
+        StreamProvider<User>(create: (context) => context.read()),
       ],
       child: MaterialApp(
         title: 'Flutter Demo',

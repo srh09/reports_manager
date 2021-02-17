@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:provider/provider.dart';
 
 import '../services/auth.dart';
 import 'jobsites.dart';
@@ -13,7 +14,6 @@ class SignupScreen extends StatefulWidget {
 }
 
 class _SignupScreenState extends State<SignupScreen> {
-  AuthService authService = AuthService();
   final _formKey = GlobalKey<FormState>();
   final emailTextEditController = TextEditingController();
   final firstNameTextEditController = TextEditingController();
@@ -27,18 +27,6 @@ class _SignupScreenState extends State<SignupScreen> {
   final FocusNode _confirmPasswordFocus = FocusNode();
   var _errorMessage = '';
 
-  @override
-  void initState() {
-    super.initState();
-    authService.user.listen(
-      (User user) {
-        if (user != null) {
-          Navigator.pushReplacementNamed(context, JobsitesScreen.routeName);
-        }
-      },
-    );
-  }
-
   void processError(final PlatformException error) {
     setState(() {
       _errorMessage = error.message;
@@ -47,6 +35,10 @@ class _SignupScreenState extends State<SignupScreen> {
 
   @override
   Widget build(BuildContext context) {
+    // context.read<AuthService>().user.listen((User user) {
+    //   if (user != null)
+    //     Navigator.pushReplacementNamed(context, JobsitesScreen.routeName);
+    // });
     return Scaffold(
       backgroundColor: Colors.white,
       body: Center(
@@ -203,7 +195,7 @@ class _SignupScreenState extends State<SignupScreen> {
                   ),
                   onPressed: () {
                     if (_formKey.currentState.validate()) {
-                      authService.registerWithEmailPassword(
+                      context.read<AuthService>().registerWithEmailPassword(
                           emailTextEditController.text,
                           passwordTextEditController.text);
                     }
