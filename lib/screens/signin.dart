@@ -23,6 +23,16 @@ class _SigninScreenState extends State<SigninScreen> {
 
   String errorMsg;
 
+  void _submitSignIn(BuildContext context) async {
+    if (_formKey.currentState.validate()) {
+      errorMsg = await context.read<AuthService>().signInWithEmailPassword(
+          emailController.text.trim(), passwordController.text.trim());
+      if (errorMsg != null) {
+        Helpers.createAlertDialog(context, errorMsg, 'Error');
+      }
+    }
+  }
+
   Widget _buildHeroLogo() {
     return Padding(
       padding: EdgeInsets.symmetric(vertical: 40.0),
@@ -60,19 +70,14 @@ class _SigninScreenState extends State<SigninScreen> {
     );
   }
 
-  Widget _buildPasswordInput() {
+  Widget _buildPasswordInput(BuildContext context) {
     return SizedBox(
       height: 80.0,
       child: TextFormField(
         controller: passwordController,
         validator: (value) => Validators.password(value),
         textInputAction: TextInputAction.done,
-        onFieldSubmitted: (_) {
-          if (_formKey.currentState.validate()) {
-            // authService.signInWithEmailPassword(
-            //     emailController.text, passwordController.text);
-          }
-        },
+        onFieldSubmitted: (_) => _submitSignIn(context),
         decoration: InputDecoration(
           hintText: 'Password',
           contentPadding:
@@ -89,17 +94,7 @@ class _SigninScreenState extends State<SigninScreen> {
       width: double.infinity,
       child: RaisedButton(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
-        onPressed: () async {
-          if (_formKey.currentState.validate()) {
-            errorMsg = await context
-                .read<AuthService>()
-                .signInWithEmailPassword(emailController.text.trim(),
-                    passwordController.text.trim());
-            if (errorMsg != null) {
-              Helpers.createAlertDialog(context, errorMsg, 'Error');
-            }
-          }
-        },
+        onPressed: () => _submitSignIn(context),
         padding: EdgeInsets.all(12),
         color: Colors.lightBlueAccent,
         child: Text('Log In', style: TextStyle(color: Colors.white)),
@@ -163,7 +158,7 @@ class _SigninScreenState extends State<SigninScreen> {
                       children: <Widget>[
                         _buildHeroLogo(),
                         _buildEmailInput(),
-                        _buildPasswordInput(),
+                        _buildPasswordInput(context),
                         _buildLoginButton(context),
                         _buildRegisterButton(),
                         _buildForgotPasswordLabel(),

@@ -18,10 +18,14 @@ class AuthService {
           email: email, password: password);
       return null;
     } on FirebaseAuthException catch (e) {
-      if (e.code == 'weak-password')
-        return 'The password provided is too weak.';
-      else if (e.code == 'email-already-in-use')
+      if (e.code == 'email-already-in-use')
         return 'The account already exists for that email.';
+      else if (e.code == 'invalid-email')
+        return 'The email address is not valid.';
+      else if (e.code == 'operation-not-allowed')
+        return 'Email/Password signin is not enabled.';
+      else if (e.code == 'weak-password')
+        return 'The password provided is too weak.';
       return e.message;
     } catch (e) {
       return e.message;
@@ -34,7 +38,11 @@ class AuthService {
           email: email, password: password);
       return null;
     } on FirebaseAuthException catch (e) {
-      if (e.code == 'user-not-found')
+      if (e.code == 'invalid-email')
+        return 'The email address is not valid.';
+      else if (e.code == 'user-disabled')
+        return 'This user is disabled.';
+      else if (e.code == 'user-not-found')
         return 'No user found for that email.';
       else if (e.code == 'wrong-password')
         return 'Wrong password provided for that user.';
