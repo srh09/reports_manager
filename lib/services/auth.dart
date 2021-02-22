@@ -1,7 +1,10 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:reports_manager/models/user.dart';
 
 class AuthService {
+  final _db = FirebaseFirestore.instance;
   final FirebaseAuth _firebaseAuth;
   final GoogleSignIn _googleSignIn = GoogleSignIn();
 
@@ -11,11 +14,14 @@ class AuthService {
 
   Future<void> signOut() => _firebaseAuth.signOut();
 
-  Future<String> registerWithEmailPassword(
-      String email, String password) async {
+  Future<String> registerWithEmailPassword(RegistrationCredentials data) async {
     try {
-      await _firebaseAuth.createUserWithEmailAndPassword(
-          email: email, password: password);
+      UserCredential userCredential =
+          await _firebaseAuth.createUserWithEmailAndPassword(
+              email: data.email, password: data.password);
+      User user = userCredential.user;
+      DocumentReference usersRef = _db.collection('users').doc(user.uid);
+      usersRef.set({'firstName': data.firstName, 'lastName': data.lastName});
       return null;
     } on FirebaseAuthException catch (e) {
       if (e.code == 'email-already-in-use')

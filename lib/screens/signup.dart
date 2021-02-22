@@ -2,35 +2,26 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:provider/provider.dart';
+import 'package:reports_manager/models/user.dart';
+import 'package:reports_manager/utilities/validators.dart';
 
 import '../services/auth.dart';
 import 'jobsites.dart';
 
-class SignupScreen extends StatefulWidget {
+class SignupScreen extends StatelessWidget {
   static const routeName = '/signup';
-
-  @override
-  _SignupScreenState createState() => _SignupScreenState();
-}
-
-class _SignupScreenState extends State<SignupScreen> {
   final _formKey = GlobalKey<FormState>();
-  final emailTextEditController = TextEditingController();
-  final firstNameTextEditController = TextEditingController();
-  final lastNameTextEditController = TextEditingController();
-  final passwordTextEditController = TextEditingController();
-  final confirmPasswordTextEditController = TextEditingController();
-  final FocusNode _emailFocus = FocusNode();
-  final FocusNode _firstNameFocus = FocusNode();
-  final FocusNode _lastNameFocus = FocusNode();
-  final FocusNode _passwordFocus = FocusNode();
-  final FocusNode _confirmPasswordFocus = FocusNode();
-  var _errorMessage = '';
+  final _passwordController = TextEditingController();
+  final _registrationCredentials = RegistrationCredentials();
 
-  void processError(final PlatformException error) {
-    setState(() {
-      _errorMessage = error.message;
-    });
+  void submitRegistration(BuildContext context) {
+    if (_formKey.currentState.validate()) {
+      _formKey.currentState.save();
+      print('done---');
+      context
+          .read<AuthService>()
+          .registerWithEmailPassword(_registrationCredentials);
+    }
   }
 
   Widget _buildRegisterText() {
@@ -48,20 +39,10 @@ class _SignupScreenState extends State<SignupScreen> {
     return Padding(
       padding: EdgeInsets.symmetric(vertical: 8.0),
       child: TextFormField(
-        validator: (value) {
-          if (value.isEmpty || !value.contains('@')) {
-            return 'Please enter a valid email.';
-          }
-          return null;
-        },
-        controller: emailTextEditController,
+        validator: (value) => Validators.email(value),
+        onSaved: (value) => _registrationCredentials.email = value,
         keyboardType: TextInputType.emailAddress,
-        autofocus: true,
         textInputAction: TextInputAction.next,
-        focusNode: _emailFocus,
-        onFieldSubmitted: (term) {
-          FocusScope.of(context).requestFocus(_firstNameFocus);
-        },
         decoration: InputDecoration(
           hintText: 'Email',
           contentPadding: EdgeInsets.fromLTRB(20.0, 10.0, 20.0, 10.0),
@@ -75,20 +56,9 @@ class _SignupScreenState extends State<SignupScreen> {
     return Padding(
       padding: EdgeInsets.symmetric(vertical: 8.0),
       child: TextFormField(
-        validator: (value) {
-          if (value.isEmpty) {
-            return 'Please enter your first name.';
-          }
-          return null;
-        },
-        controller: firstNameTextEditController,
-        keyboardType: TextInputType.text,
-        autofocus: false,
+        validator: (value) => Validators.name(value, 'First Name'),
+        onSaved: (value) => _registrationCredentials.firstName = value,
         textInputAction: TextInputAction.next,
-        focusNode: _firstNameFocus,
-        onFieldSubmitted: (term) {
-          FocusScope.of(context).requestFocus(_lastNameFocus);
-        },
         decoration: InputDecoration(
           hintText: 'First Name',
           contentPadding: EdgeInsets.fromLTRB(20.0, 10.0, 20.0, 10.0),
@@ -102,20 +72,9 @@ class _SignupScreenState extends State<SignupScreen> {
     return Padding(
       padding: EdgeInsets.symmetric(vertical: 8.0),
       child: TextFormField(
-        validator: (value) {
-          if (value.isEmpty) {
-            return 'Please enter your last name.';
-          }
-          return null;
-        },
-        controller: lastNameTextEditController,
-        keyboardType: TextInputType.text,
-        autofocus: false,
+        validator: (value) => Validators.name(value, 'Last Name'),
+        onSaved: (value) => _registrationCredentials.lastName = value,
         textInputAction: TextInputAction.next,
-        focusNode: _lastNameFocus,
-        onFieldSubmitted: (term) {
-          FocusScope.of(context).requestFocus(_passwordFocus);
-        },
         decoration: InputDecoration(
           hintText: 'Last Name',
           contentPadding: EdgeInsets.fromLTRB(20.0, 10.0, 20.0, 10.0),
@@ -129,20 +88,11 @@ class _SignupScreenState extends State<SignupScreen> {
     return Padding(
       padding: EdgeInsets.symmetric(vertical: 8.0),
       child: TextFormField(
-        validator: (value) {
-          if (value.length < 8) {
-            return 'Password must be longer than 8 characters.';
-          }
-          return null;
-        },
-        autofocus: false,
+        controller: _passwordController,
+        validator: (value) => Validators.password(value),
+        onSaved: (value) => _registrationCredentials.password = value,
         obscureText: true,
-        controller: passwordTextEditController,
         textInputAction: TextInputAction.next,
-        focusNode: _passwordFocus,
-        onFieldSubmitted: (term) {
-          FocusScope.of(context).requestFocus(_confirmPasswordFocus);
-        },
         decoration: InputDecoration(
           hintText: 'Password',
           contentPadding: EdgeInsets.fromLTRB(20.0, 10.0, 20.0, 10.0),
@@ -152,22 +102,18 @@ class _SignupScreenState extends State<SignupScreen> {
     );
   }
 
-  Widget _buildConfirmPasswordInput() {
+  Widget _buildConfirmPasswordInput(BuildContext context) {
     return Padding(
       padding: EdgeInsets.symmetric(vertical: 8.0),
       child: TextFormField(
-        autofocus: false,
-        obscureText: true,
-        controller: confirmPasswordTextEditController,
-        focusNode: _confirmPasswordFocus,
-        textInputAction: TextInputAction.done,
-        validator: (value) {
-          if (passwordTextEditController.text.length > 8 &&
-              passwordTextEditController.text != value) {
-            return 'Passwords do not match.';
-          }
-          return null;
+        validator: (value) =>
+            Validators.passwordMatch(value, _passwordController.text),
+        onFieldSubmitted: (_) {
+          print('done---');
+          print(_registrationCredentials);
         },
+        obscureText: true,
+        textInputAction: TextInputAction.done,
         decoration: InputDecoration(
           hintText: 'Confirm Password',
           contentPadding: EdgeInsets.fromLTRB(20.0, 10.0, 20.0, 10.0),
@@ -177,19 +123,14 @@ class _SignupScreenState extends State<SignupScreen> {
     );
   }
 
-  Widget _buildSignupButton() {
+  Widget _buildSignupButton(BuildContext context) {
     return Padding(
       padding: EdgeInsets.only(top: 10.0),
       child: RaisedButton(
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(24),
         ),
-        onPressed: () {
-          if (_formKey.currentState.validate()) {
-            context.read<AuthService>().registerWithEmailPassword(
-                emailTextEditController.text, passwordTextEditController.text);
-          }
-        },
+        onPressed: () => submitRegistration(context),
         padding: EdgeInsets.all(12),
         color: Colors.lightGreen,
         child: Text('Sign Up'.toUpperCase(),
@@ -198,7 +139,7 @@ class _SignupScreenState extends State<SignupScreen> {
     );
   }
 
-  Widget _buildCancelButton() {
+  Widget _buildCancelButton(BuildContext context) {
     return Padding(
       padding: EdgeInsets.zero,
       child: FlatButton(
@@ -243,9 +184,9 @@ class _SignupScreenState extends State<SignupScreen> {
                         _buildFirstNameInput(),
                         _buildLastNameInput(),
                         _buildPasswordInput(),
-                        _buildConfirmPasswordInput(),
-                        _buildSignupButton(),
-                        _buildCancelButton(),
+                        _buildConfirmPasswordInput(context),
+                        _buildSignupButton(context),
+                        _buildCancelButton(context),
                       ],
                     ),
                   ),

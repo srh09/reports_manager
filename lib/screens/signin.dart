@@ -76,8 +76,8 @@ class _SigninScreenState extends State<SigninScreen> {
       child: TextFormField(
         controller: passwordController,
         validator: (value) => Validators.password(value),
-        textInputAction: TextInputAction.done,
         onFieldSubmitted: (_) => _submitSignIn(context),
+        textInputAction: TextInputAction.done,
         decoration: InputDecoration(
           hintText: 'Password',
           contentPadding:
@@ -109,9 +109,8 @@ class _SigninScreenState extends State<SigninScreen> {
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(24),
         ),
-        onPressed: () {
-          Navigator.of(context).pushNamed(SignupScreen.routeName);
-        },
+        onPressed: () =>
+            Navigator.of(context).pushNamed(SignupScreen.routeName),
         padding: EdgeInsets.all(12),
         color: Colors.lightGreen,
         child: Text('Register', style: TextStyle(color: Colors.white)),
