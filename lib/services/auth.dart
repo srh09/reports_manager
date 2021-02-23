@@ -14,7 +14,7 @@ class AuthService {
 
   Future<void> signOut() => _firebaseAuth.signOut();
 
-  Future<String> registerWithEmailPassword(RegistrationCredentials data) async {
+  Future<String> registerWithEmailPassword(RegistrationData data) async {
     try {
       UserCredential userCredential =
           await _firebaseAuth.createUserWithEmailAndPassword(
@@ -38,10 +38,10 @@ class AuthService {
     }
   }
 
-  Future<String> signInWithEmailPassword(String email, String password) async {
+  Future<String> signInWithEmailPassword(SigninData data) async {
     try {
       await _firebaseAuth.signInWithEmailAndPassword(
-          email: email, password: password);
+          email: data.email, password: data.password);
       return null;
     } on FirebaseAuthException catch (e) {
       if (e.code == 'invalid-email')

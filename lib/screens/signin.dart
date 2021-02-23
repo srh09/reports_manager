@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:provider/provider.dart';
+import 'package:reports_manager/models/user.dart';
 import 'package:reports_manager/utilities/helpers.dart';
 
 import '../services/auth.dart';
@@ -18,18 +19,15 @@ class SigninScreen extends StatefulWidget {
 
 class _SigninScreenState extends State<SigninScreen> {
   final _formKey = GlobalKey<FormState>();
-  final TextEditingController emailController = TextEditingController();
-  final TextEditingController passwordController = TextEditingController();
-
-  String errorMsg;
+  final _signinData = SigninData();
 
   void _submitSignIn(BuildContext context) async {
     if (_formKey.currentState.validate()) {
-      errorMsg = await context.read<AuthService>().signInWithEmailPassword(
-          emailController.text.trim(), passwordController.text.trim());
-      if (errorMsg != null) {
-        Helpers.createAlertDialog(context, errorMsg, 'Error');
-      }
+      _formKey.currentState.save();
+      final errorMsg = await context
+          .read<AuthService>()
+          .signInWithEmailPassword(_signinData);
+      if (errorMsg != null) Helpers.createAlertDialog(context, errorMsg);
     }
   }
 
@@ -54,8 +52,8 @@ class _SigninScreenState extends State<SigninScreen> {
     return Padding(
       padding: EdgeInsets.only(bottom: 10.0),
       child: TextFormField(
-        controller: emailController,
         validator: (value) => Validators.email(value),
+        onSaved: (value) => _signinData.email = value.trim(),
         keyboardType: TextInputType.emailAddress,
         textInputAction: TextInputAction.next,
         decoration: InputDecoration(
@@ -74,8 +72,8 @@ class _SigninScreenState extends State<SigninScreen> {
     return SizedBox(
       height: 80.0,
       child: TextFormField(
-        controller: passwordController,
         validator: (value) => Validators.password(value),
+        onSaved: (value) => _signinData.password = value.trim(),
         onFieldSubmitted: (_) => _submitSignIn(context),
         textInputAction: TextInputAction.done,
         decoration: InputDecoration(
@@ -133,10 +131,10 @@ class _SigninScreenState extends State<SigninScreen> {
 
   @override
   Widget build(BuildContext context) {
-    // context.watch<AuthService>().user.listen((User user) {
-    //   if (user != null)
-    //     Navigator.pushReplacementNamed(context, JobsitesScreen.routeName);
-    // });
+    context.watch<AuthService>().user.listen((User user) {
+      if (user != null)
+        Navigator.pushReplacementNamed(context, JobsitesScreen.routeName);
+    });
     return Scaffold(
       body: LayoutBuilder(
         builder: (BuildContext context, BoxConstraints viewportConstraints) {

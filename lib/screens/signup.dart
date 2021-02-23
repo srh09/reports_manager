@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:provider/provider.dart';
 import 'package:reports_manager/models/user.dart';
+import 'package:reports_manager/utilities/helpers.dart';
 import 'package:reports_manager/utilities/validators.dart';
 
 import '../services/auth.dart';
@@ -12,15 +13,16 @@ class SignupScreen extends StatelessWidget {
   static const routeName = '/signup';
   final _formKey = GlobalKey<FormState>();
   final _passwordController = TextEditingController();
-  final _registrationCredentials = RegistrationCredentials();
+  final _registrationData = RegistrationData();
+  BuildContext ctx;
 
-  void submitRegistration(BuildContext context) {
+  void _submitRegistration() async {
     if (_formKey.currentState.validate()) {
       _formKey.currentState.save();
-      print('done---');
-      context
+      final errorMsg = await ctx
           .read<AuthService>()
-          .registerWithEmailPassword(_registrationCredentials);
+          .registerWithEmailPassword(_registrationData);
+      if (errorMsg != null) Helpers.createAlertDialog(ctx, errorMsg);
     }
   }
 
@@ -40,7 +42,7 @@ class SignupScreen extends StatelessWidget {
       padding: EdgeInsets.symmetric(vertical: 8.0),
       child: TextFormField(
         validator: (value) => Validators.email(value),
-        onSaved: (value) => _registrationCredentials.email = value,
+        onSaved: (value) => _registrationData.email = value.trim(),
         keyboardType: TextInputType.emailAddress,
         textInputAction: TextInputAction.next,
         decoration: InputDecoration(
@@ -57,7 +59,7 @@ class SignupScreen extends StatelessWidget {
       padding: EdgeInsets.symmetric(vertical: 8.0),
       child: TextFormField(
         validator: (value) => Validators.name(value, 'First Name'),
-        onSaved: (value) => _registrationCredentials.firstName = value,
+        onSaved: (value) => _registrationData.firstName = value.trim(),
         textInputAction: TextInputAction.next,
         decoration: InputDecoration(
           hintText: 'First Name',
@@ -73,7 +75,7 @@ class SignupScreen extends StatelessWidget {
       padding: EdgeInsets.symmetric(vertical: 8.0),
       child: TextFormField(
         validator: (value) => Validators.name(value, 'Last Name'),
-        onSaved: (value) => _registrationCredentials.lastName = value,
+        onSaved: (value) => _registrationData.lastName = value.trim(),
         textInputAction: TextInputAction.next,
         decoration: InputDecoration(
           hintText: 'Last Name',
@@ -90,7 +92,7 @@ class SignupScreen extends StatelessWidget {
       child: TextFormField(
         controller: _passwordController,
         validator: (value) => Validators.password(value),
-        onSaved: (value) => _registrationCredentials.password = value,
+        onSaved: (value) => _registrationData.password = value.trim(),
         obscureText: true,
         textInputAction: TextInputAction.next,
         decoration: InputDecoration(
@@ -102,35 +104,35 @@ class SignupScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildConfirmPasswordInput(BuildContext context) {
-    return Padding(
-      padding: EdgeInsets.symmetric(vertical: 8.0),
-      child: TextFormField(
-        validator: (value) =>
-            Validators.passwordMatch(value, _passwordController.text),
-        onFieldSubmitted: (_) {
-          print('done---');
-          print(_registrationCredentials);
-        },
-        obscureText: true,
-        textInputAction: TextInputAction.done,
-        decoration: InputDecoration(
-          hintText: 'Confirm Password',
-          contentPadding: EdgeInsets.fromLTRB(20.0, 10.0, 20.0, 10.0),
-          border: OutlineInputBorder(borderRadius: BorderRadius.circular(32.0)),
+  Widget _buildConfirmPasswordInput() {
+    return Builder(builder: (BuildContext context) {
+      return Padding(
+        padding: EdgeInsets.symmetric(vertical: 8.0),
+        child: TextFormField(
+          validator: (value) =>
+              Validators.passwordMatch(value, _passwordController.text),
+          onFieldSubmitted: (_) => _submitRegistration(),
+          obscureText: true,
+          textInputAction: TextInputAction.done,
+          decoration: InputDecoration(
+            hintText: 'Confirm Password',
+            contentPadding: EdgeInsets.fromLTRB(20.0, 10.0, 20.0, 10.0),
+            border:
+                OutlineInputBorder(borderRadius: BorderRadius.circular(32.0)),
+          ),
         ),
-      ),
-    );
+      );
+    });
   }
 
-  Widget _buildSignupButton(BuildContext context) {
+  Widget _buildSignupButton() {
     return Padding(
       padding: EdgeInsets.only(top: 10.0),
       child: RaisedButton(
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(24),
         ),
-        onPressed: () => submitRegistration(context),
+        onPressed: () => _submitRegistration(),
         padding: EdgeInsets.all(12),
         color: Colors.lightGreen,
         child: Text('Sign Up'.toUpperCase(),
@@ -139,7 +141,7 @@ class SignupScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildCancelButton(BuildContext context) {
+  Widget _buildCancelButton() {
     return Padding(
       padding: EdgeInsets.zero,
       child: FlatButton(
@@ -148,7 +150,7 @@ class SignupScreen extends StatelessWidget {
           style: TextStyle(color: Colors.black54),
         ),
         onPressed: () {
-          Navigator.pop(context);
+          Navigator.pop(ctx);
         },
       ),
     );
@@ -156,10 +158,11 @@ class SignupScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // context.read<AuthService>().user.listen((User user) {
-    //   if (user != null)
-    //     Navigator.pushReplacementNamed(context, JobsitesScreen.routeName);
-    // });
+    ctx = context;
+    context.watch<AuthService>().user.listen((User user) {
+      if (user != null)
+        Navigator.pushReplacementNamed(context, JobsitesScreen.routeName);
+    });
 
     return Scaffold(
       body: LayoutBuilder(
@@ -184,9 +187,9 @@ class SignupScreen extends StatelessWidget {
                         _buildFirstNameInput(),
                         _buildLastNameInput(),
                         _buildPasswordInput(),
-                        _buildConfirmPasswordInput(context),
-                        _buildSignupButton(context),
-                        _buildCancelButton(context),
+                        _buildConfirmPasswordInput(),
+                        _buildSignupButton(),
+                        _buildCancelButton(),
                       ],
                     ),
                   ),
