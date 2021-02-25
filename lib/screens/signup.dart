@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:provider/provider.dart';
-import 'package:reports_manager/models/user.dart';
+import 'package:reports_manager/models/auth.dart';
 import 'package:reports_manager/utilities/helpers.dart';
 import 'package:reports_manager/utilities/validators.dart';
 
@@ -14,15 +14,14 @@ class SignupScreen extends StatelessWidget {
   final _formKey = GlobalKey<FormState>();
   final _passwordController = TextEditingController();
   final _registrationData = RegistrationData();
-  BuildContext ctx;
 
-  void _submitRegistration() async {
+  void _submitRegistration(BuildContext context) async {
     if (_formKey.currentState.validate()) {
       _formKey.currentState.save();
-      final errorMsg = await ctx
+      final errorMsg = await context
           .read<AuthService>()
           .registerWithEmailPassword(_registrationData);
-      if (errorMsg != null) Helpers.createAlertDialog(ctx, errorMsg);
+      if (errorMsg != null) Helpers.createAlertDialog(context, errorMsg);
     }
   }
 
@@ -104,14 +103,14 @@ class SignupScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildConfirmPasswordInput() {
+  Widget _buildConfirmPasswordInput(BuildContext context) {
     return Builder(builder: (BuildContext context) {
       return Padding(
         padding: EdgeInsets.symmetric(vertical: 8.0),
         child: TextFormField(
           validator: (value) =>
               Validators.passwordMatch(value, _passwordController.text),
-          onFieldSubmitted: (_) => _submitRegistration(),
+          onFieldSubmitted: (_) => _submitRegistration(context),
           obscureText: true,
           textInputAction: TextInputAction.done,
           decoration: InputDecoration(
@@ -125,14 +124,14 @@ class SignupScreen extends StatelessWidget {
     });
   }
 
-  Widget _buildSignupButton() {
+  Widget _buildSignupButton(BuildContext context) {
     return Padding(
       padding: EdgeInsets.only(top: 10.0),
       child: RaisedButton(
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(24),
         ),
-        onPressed: () => _submitRegistration(),
+        onPressed: () => _submitRegistration(context),
         padding: EdgeInsets.all(12),
         color: Colors.lightGreen,
         child: Text('Sign Up'.toUpperCase(),
@@ -141,16 +140,16 @@ class SignupScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildCancelButton() {
+  Widget _buildCancelButton(BuildContext context) {
     return Padding(
       padding: EdgeInsets.zero,
-      child: FlatButton(
+      child: TextButton(
         child: Text(
           'Cancel',
           style: TextStyle(color: Colors.black54),
         ),
         onPressed: () {
-          Navigator.pop(ctx);
+          Navigator.pop(context);
         },
       ),
     );
@@ -158,7 +157,6 @@ class SignupScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    ctx = context;
     context.watch<AuthService>().user.listen((User user) {
       if (user != null)
         Navigator.pushReplacementNamed(context, JobsitesScreen.routeName);
@@ -187,9 +185,9 @@ class SignupScreen extends StatelessWidget {
                         _buildFirstNameInput(),
                         _buildLastNameInput(),
                         _buildPasswordInput(),
-                        _buildConfirmPasswordInput(),
-                        _buildSignupButton(),
-                        _buildCancelButton(),
+                        _buildConfirmPasswordInput(context),
+                        _buildSignupButton(context),
+                        _buildCancelButton(context),
                       ],
                     ),
                   ),

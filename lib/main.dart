@@ -22,8 +22,11 @@ class App extends StatelessWidget {
     return MultiProvider(
       providers: [
         Provider<AuthService>(
-            create: (_) => AuthService(FirebaseAuth.instance)),
-        StreamProvider<User>(create: (context) => context.read()),
+          create: (_) => AuthService(FirebaseAuth.instance),
+        ),
+        StreamProvider(
+          create: (context) => context.read<AuthService>().user,
+        )
       ],
       child: MaterialApp(
         title: 'Flutter Demo',

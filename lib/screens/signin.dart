@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:provider/provider.dart';
-import 'package:reports_manager/models/user.dart';
+import 'package:reports_manager/models/auth.dart';
 import 'package:reports_manager/utilities/helpers.dart';
 
 import '../services/auth.dart';
@@ -10,14 +10,8 @@ import '../utilities/validators.dart';
 import 'signup.dart';
 import 'jobsites.dart';
 
-class SigninScreen extends StatefulWidget {
+class SigninScreen extends StatelessWidget {
   static const routeName = '/signin';
-
-  @override
-  _SigninScreenState createState() => _SigninScreenState();
-}
-
-class _SigninScreenState extends State<SigninScreen> {
   final _formKey = GlobalKey<FormState>();
   final _signinData = SigninData();
 
@@ -100,7 +94,7 @@ class _SigninScreenState extends State<SigninScreen> {
     );
   }
 
-  Widget _buildRegisterButton() {
+  Widget _buildRegisterButton(BuildContext context) {
     return Container(
       width: double.infinity,
       child: RaisedButton(
@@ -119,7 +113,7 @@ class _SigninScreenState extends State<SigninScreen> {
   Widget _buildForgotPasswordLabel() {
     return Padding(
       padding: EdgeInsets.only(bottom: 40.0),
-      child: FlatButton(
+      child: TextButton(
         child: Text(
           'Forgot password?',
           style: TextStyle(color: Colors.black54),
@@ -135,6 +129,7 @@ class _SigninScreenState extends State<SigninScreen> {
       if (user != null)
         Navigator.pushReplacementNamed(context, JobsitesScreen.routeName);
     });
+
     return Scaffold(
       body: LayoutBuilder(
         builder: (BuildContext context, BoxConstraints viewportConstraints) {
@@ -157,7 +152,7 @@ class _SigninScreenState extends State<SigninScreen> {
                         _buildEmailInput(),
                         _buildPasswordInput(context),
                         _buildLoginButton(context),
-                        _buildRegisterButton(),
+                        _buildRegisterButton(context),
                         _buildForgotPasswordLabel(),
                       ],
                     ),
