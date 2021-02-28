@@ -14,6 +14,10 @@ class AuthService {
 
   Future<void> signOut() => _firebaseAuth.signOut();
 
+  User getUser() {
+    return _firebaseAuth.currentUser;
+  }
+
   Future<String> registerWithEmailPassword(RegistrationData data) async {
     try {
       UserCredential userCredential =
