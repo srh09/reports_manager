@@ -6,6 +6,7 @@ import 'package:reports_manager/screens/contact_group.dart';
 import 'package:reports_manager/screens/jobsites.dart';
 import 'package:reports_manager/screens/report.dart';
 import 'package:reports_manager/screens/signup.dart';
+import 'package:reports_manager/screens/user.dart';
 import 'package:reports_manager/services/auth.dart';
 
 import 'screens/signin.dart';
@@ -22,11 +23,7 @@ class App extends StatelessWidget {
     return MultiProvider(
       providers: [
         Provider<AuthService>(
-          create: (_) => AuthService(FirebaseAuth.instance),
-        ),
-        StreamProvider(
-          create: (context) => context.read<AuthService>().user,
-        )
+            create: (_) => AuthService(FirebaseAuth.instance)),
       ],
       child: MaterialApp(
         title: 'Flutter Demo',
@@ -38,6 +35,7 @@ class App extends StatelessWidget {
         routes: {
           SigninScreen.routeName: (context) => SigninScreen(),
           SignupScreen.routeName: (context) => SignupScreen(),
+          UserScreen.routeName: (context) => UserScreen(),
           JobsitesScreen.routeName: (context) => JobsitesScreen(),
           ContactGroupsScreen.routeName: (context) => ContactGroupsScreen(),
           ReportScreen.routeName: (context) => ReportScreen(),

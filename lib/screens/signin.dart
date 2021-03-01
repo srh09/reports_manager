@@ -128,8 +128,6 @@ class SigninScreen extends StatelessWidget {
     context.watch<AuthService>().user.listen((User user) {
       if (user != null)
         Navigator.pushReplacementNamed(context, JobsitesScreen.routeName);
-      print('test----');
-      print(user);
     });
 
     return Scaffold(
