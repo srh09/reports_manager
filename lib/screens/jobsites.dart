@@ -3,22 +3,29 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:reports_manager/models/auth.dart';
 import 'package:reports_manager/models/contact_group.dart';
+import 'package:reports_manager/models/jobsite.dart';
 import 'package:reports_manager/screens/contact_group.dart';
 import 'package:reports_manager/screens/signin.dart';
 import 'package:reports_manager/screens/user.dart';
 import 'package:reports_manager/services/auth.dart';
+
+var jobsitesList = [
+  Jobsite(title: 'Jobsite Title 1', address: 'jobsite address 1'),
+  Jobsite(title: 'Jobsite Title 2', address: 'jobsite address 2'),
+];
 
 class JobsitesScreen extends StatelessWidget {
   static const routeName = '/jobsites';
 
   Widget _buildUserButton(BuildContext context) {
     return PopupMenuButton<UserOptions>(
-      onSelected: (UserOptions selection) {
+      onSelected: (UserOptions selection) async {
         print('onselected-----');
         if (selection == UserOptions.UserScreen) {
           print('user screen pushed-----');
           Navigator.of(context).pushNamed(UserScreen.routeName);
         } else if (selection == UserOptions.Logout) {
+          await context.read<AuthService>().signOut();
           // logout
         }
       },
@@ -112,12 +119,25 @@ class JobsitesScreen extends StatelessWidget {
           ],
         ),
       ),
-      body: Center(
-        child: Column(
-          children: [
-            _buildLogoutButton(context),
-            _buildTestButton(context),
-          ],
+      body: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: ListView.builder(
+          itemCount: jobsitesList.length,
+          itemBuilder: (context, index) {
+            final item = jobsitesList[index];
+            return Card(
+              child: InkWell(
+                child: ListTile(
+                  title: Text(item.title),
+                  subtitle: Text(item.address),
+                ),
+                splashColor: Colors.blue.withAlpha(30),
+                onTap: () {
+                  print('card tapped-------');
+                },
+              ),
+            );
+          },
         ),
       ),
     );
