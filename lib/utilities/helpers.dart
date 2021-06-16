@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 class Helpers {
   static void createAlertDialog(BuildContext context, String message,
-      [String title]) {
+      [String? title]) {
     Widget okButton = TextButton(
       child: Text('OK'),
       onPressed: () => Navigator.pop(context),

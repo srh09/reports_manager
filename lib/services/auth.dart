@@ -11,20 +11,20 @@ class AuthService {
 
   AuthService(this._firebaseAuth);
 
-  Stream<User> get user => _firebaseAuth.authStateChanges();
+  Stream<User?> get user => _firebaseAuth.authStateChanges();
 
   Future<void> signOut() => _firebaseAuth.signOut();
 
-  User getUser() {
+  User? getUser() {
     return _firebaseAuth.currentUser;
   }
 
-  Future<String> registerWithEmailPassword(RegistrationData data) async {
+  Future<String?> registerWithEmailPassword(RegistrationData data) async {
     try {
       UserCredential userCredential =
           await _firebaseAuth.createUserWithEmailAndPassword(
               email: data.email, password: data.password);
-      User user = userCredential.user;
+      User user = userCredential.user!;
       DocumentReference usersRef = _db.collection('users').doc(user.uid);
       usersRef.set({'firstName': data.firstName, 'lastName': data.lastName});
       return null;
@@ -43,7 +43,7 @@ class AuthService {
     }
   }
 
-  Future<String> signInWithEmailPassword(SigninData data) async {
+  Future<String?> signInWithEmailPassword(SigninData data) async {
     try {
       await _firebaseAuth.signInWithEmailAndPassword(
           email: data.email, password: data.password);
@@ -63,9 +63,9 @@ class AuthService {
     }
   }
 
-  Future<String> signInWithGoogle() async {
+  Future<String?> signInWithGoogle() async {
     try {
-      GoogleSignInAccount googleSignInAccount = await _googleSignIn.signIn();
+      GoogleSignInAccount googleSignInAccount = await (_googleSignIn.signIn() as FutureOr<GoogleSignInAccount>);
       GoogleSignInAuthentication googleAuth =
           await googleSignInAccount.authentication;
       final AuthCredential authCredential = GoogleAuthProvider.credential(

@@ -16,8 +16,8 @@ class SigninScreen extends StatelessWidget {
   final _signinData = SigninData();
 
   void _submitSignIn(BuildContext context) async {
-    if (_formKey.currentState.validate()) {
-      _formKey.currentState.save();
+    if (_formKey.currentState!.validate()) {
+      _formKey.currentState!.save();
       final errorMsg = await context
           .read<AuthService>()
           .signInWithEmailPassword(_signinData);
@@ -47,7 +47,7 @@ class SigninScreen extends StatelessWidget {
       padding: EdgeInsets.only(bottom: 10.0),
       child: TextFormField(
         validator: (value) => Validators.email(value),
-        onSaved: (value) => _signinData.email = value.trim(),
+        onSaved: (value) => _signinData.email = value!.trim(),
         keyboardType: TextInputType.emailAddress,
         textInputAction: TextInputAction.next,
         decoration: InputDecoration(
@@ -67,7 +67,7 @@ class SigninScreen extends StatelessWidget {
       height: 80.0,
       child: TextFormField(
         validator: (value) => Validators.password(value),
-        onSaved: (value) => _signinData.password = value.trim(),
+        onSaved: (value) => _signinData.password = value!.trim(),
         onFieldSubmitted: (_) => _submitSignIn(context),
         textInputAction: TextInputAction.done,
         decoration: InputDecoration(
@@ -125,7 +125,7 @@ class SigninScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    context.watch<AuthService>().user.listen((User user) {
+    context.watch<AuthService>().user.listen((User? user) {
       if (user != null)
         Navigator.pushReplacementNamed(context, JobsitesScreen.routeName);
     });

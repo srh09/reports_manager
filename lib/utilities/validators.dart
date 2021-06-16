@@ -1,5 +1,5 @@
 class Validators {
-  static String email(String email) {
+  static String? email(String? email) {
     final regExp = RegExp(
         r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+");
     if (email == null || email.isEmpty)
@@ -10,7 +10,7 @@ class Validators {
       return null;
   }
 
-  static String password(String password) {
+  static String? password(String? password) {
     if (password == null || password.isEmpty)
       return 'Password is required';
     else if (password.length < 5)
@@ -19,7 +19,7 @@ class Validators {
       return null;
   }
 
-  static String passwordMatch(String newPassword, String originalPassword) {
+  static String? passwordMatch(String? newPassword, String originalPassword) {
     if (newPassword == null || newPassword.isEmpty)
       return 'Password is required';
     else if (newPassword.length < 5)
@@ -30,7 +30,7 @@ class Validators {
       return null;
   }
 
-  static String name(String value, String key) {
+  static String? name(String? value, String key) {
     final regExp = RegExp(r"^[^0-9]+$");
     if (value == null || value.isEmpty)
       return '$key is required';

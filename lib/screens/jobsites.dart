@@ -84,7 +84,7 @@ class JobsitesScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    context.watch<AuthService>().user.listen((User user) {
+    context.watch<AuthService>().user.listen((User? user) {
       print('triggered-----');
       print(user);
       if (user == null) {
@@ -128,8 +128,8 @@ class JobsitesScreen extends StatelessWidget {
             return Card(
               child: InkWell(
                 child: ListTile(
-                  title: Text(item.title),
-                  subtitle: Text(item.address),
+                  title: Text(item.title!),
+                  subtitle: Text(item.address!),
                 ),
                 splashColor: Colors.blue.withAlpha(30),
                 onTap: () {
@@ -145,7 +145,7 @@ class JobsitesScreen extends StatelessWidget {
 }
 
 class _UserButton extends StatelessWidget {
-  const _UserButton({Key key}) : super(key: key);
+  const _UserButton({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {

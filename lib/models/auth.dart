@@ -1,21 +1,21 @@
 class RMUser {
-  final String firstName;
-  final String lastName;
-  final String email;
-  final String uid;
+  final String? firstName;
+  final String? lastName;
+  final String? email;
+  final String? uid;
   RMUser({this.firstName, this.lastName, this.email, this.uid});
 }
 
 class SigninData {
-  String email;
-  String password;
+  late String email;
+  late String password;
 }
 
 class RegistrationData {
-  String email;
-  String password;
-  String firstName;
-  String lastName;
+  late String email;
+  late String password;
+  String? firstName;
+  String? lastName;
 }
 
 enum UserOptions {

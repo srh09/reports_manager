@@ -16,8 +16,8 @@ class SignupScreen extends StatelessWidget {
   final _registrationData = RegistrationData();
 
   void _submitRegistration(BuildContext context) async {
-    if (_formKey.currentState.validate()) {
-      _formKey.currentState.save();
+    if (_formKey.currentState!.validate()) {
+      _formKey.currentState!.save();
       final errorMsg = await context
           .read<AuthService>()
           .registerWithEmailPassword(_registrationData);
@@ -41,7 +41,7 @@ class SignupScreen extends StatelessWidget {
       padding: EdgeInsets.symmetric(vertical: 8.0),
       child: TextFormField(
         validator: (value) => Validators.email(value),
-        onSaved: (value) => _registrationData.email = value.trim(),
+        onSaved: (value) => _registrationData.email = value!.trim(),
         keyboardType: TextInputType.emailAddress,
         textInputAction: TextInputAction.next,
         decoration: InputDecoration(
@@ -58,7 +58,7 @@ class SignupScreen extends StatelessWidget {
       padding: EdgeInsets.symmetric(vertical: 8.0),
       child: TextFormField(
         validator: (value) => Validators.name(value, 'First Name'),
-        onSaved: (value) => _registrationData.firstName = value.trim(),
+        onSaved: (value) => _registrationData.firstName = value!.trim(),
         textInputAction: TextInputAction.next,
         decoration: InputDecoration(
           hintText: 'First Name',
@@ -74,7 +74,7 @@ class SignupScreen extends StatelessWidget {
       padding: EdgeInsets.symmetric(vertical: 8.0),
       child: TextFormField(
         validator: (value) => Validators.name(value, 'Last Name'),
-        onSaved: (value) => _registrationData.lastName = value.trim(),
+        onSaved: (value) => _registrationData.lastName = value!.trim(),
         textInputAction: TextInputAction.next,
         decoration: InputDecoration(
           hintText: 'Last Name',
@@ -91,7 +91,7 @@ class SignupScreen extends StatelessWidget {
       child: TextFormField(
         controller: _passwordController,
         validator: (value) => Validators.password(value),
-        onSaved: (value) => _registrationData.password = value.trim(),
+        onSaved: (value) => _registrationData.password = value!.trim(),
         obscureText: true,
         textInputAction: TextInputAction.next,
         decoration: InputDecoration(
@@ -157,7 +157,7 @@ class SignupScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    context.watch<AuthService>().user.listen((User user) {
+    context.watch<AuthService>().user.listen((User? user) {
       if (user != null)
         Navigator.pushReplacementNamed(context, JobsitesScreen.routeName);
     });
