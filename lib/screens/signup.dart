@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:provider/provider.dart';
-import 'package:reports_manager/models/auth.dart';
-import 'package:reports_manager/utilities/helpers.dart';
-import 'package:reports_manager/utilities/validators.dart';
 
+import '../models/auth.dart';
+import '../utilities/helpers.dart';
+import '../utilities/validators.dart';
 import '../services/auth.dart';
 import 'jobsites.dart';
 

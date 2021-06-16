@@ -1,13 +1,13 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:reports_manager/models/auth.dart';
-import 'package:reports_manager/models/contact_group.dart';
-import 'package:reports_manager/models/jobsite.dart';
-import 'package:reports_manager/screens/contact_group.dart';
-import 'package:reports_manager/screens/signin.dart';
-import 'package:reports_manager/screens/user.dart';
-import 'package:reports_manager/services/auth.dart';
+
+import '../models/auth.dart';
+import '../models/jobsite.dart';
+import 'contact_group.dart';
+import 'signin.dart';
+import 'user.dart';
+import '../services/auth.dart';
 
 var jobsitesList = [
   Jobsite(title: 'Jobsite Title 1', address: 'jobsite address 1'),
@@ -99,7 +99,7 @@ class JobsitesScreen extends StatelessWidget {
       appBar: AppBar(
         title: Text('Jobsites'),
         actions: [
-          _buildUserButton(context),
+          _UserButton(),
         ],
       ),
       drawer: Drawer(
@@ -140,6 +140,37 @@ class JobsitesScreen extends StatelessWidget {
           },
         ),
       ),
+    );
+  }
+}
+
+class _UserButton extends StatelessWidget {
+  const _UserButton({Key key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return PopupMenuButton<UserOptions>(
+      onSelected: (UserOptions selection) async {
+        print('onselected-----');
+        if (selection == UserOptions.UserScreen) {
+          print('user screen pushed-----');
+          Navigator.of(context).pushNamed(UserScreen.routeName);
+        } else if (selection == UserOptions.Logout) {
+          await context.read<AuthService>().signOut();
+          // logout
+        }
+      },
+      icon: Icon(Icons.person),
+      itemBuilder: (_) => [
+        PopupMenuItem(
+          child: Text('Profile'),
+          value: UserOptions.UserScreen,
+        ),
+        PopupMenuItem(
+          child: Text('Logout'),
+          value: UserOptions.Logout,
+        ),
+      ],
     );
   }
 }

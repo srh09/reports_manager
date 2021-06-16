@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:reports_manager/utilities/validators.dart';
+
+import '../utilities/validators.dart';
 
 class UserScreen extends StatelessWidget {
   static const routeName = '/user';

@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:provider/provider.dart';
-import 'package:reports_manager/models/auth.dart';
-import 'package:reports_manager/utilities/helpers.dart';
 
+import '../models/auth.dart';
+import '../utilities/helpers.dart';
 import '../services/auth.dart';
 import '../utilities/validators.dart';
 import 'signup.dart';
