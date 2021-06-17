@@ -84,11 +84,8 @@ class SigninScreen extends StatelessWidget {
     return Container(
       padding: EdgeInsets.only(top: 40.0),
       width: double.infinity,
-      child: RaisedButton(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+      child: ElevatedButton(
         onPressed: () => _submitSignIn(context),
-        padding: EdgeInsets.all(12),
-        color: Colors.lightBlueAccent,
         child: Text('Log In', style: TextStyle(color: Colors.white)),
       ),
     );
@@ -97,14 +94,9 @@ class SigninScreen extends StatelessWidget {
   Widget _buildRegisterButton(BuildContext context) {
     return Container(
       width: double.infinity,
-      child: RaisedButton(
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(24),
-        ),
+      child: ElevatedButton(
         onPressed: () =>
             Navigator.of(context).pushNamed(SignupScreen.routeName),
-        padding: EdgeInsets.all(12),
-        color: Colors.lightGreen,
         child: Text('Register', style: TextStyle(color: Colors.white)),
       ),
     );

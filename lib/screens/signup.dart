@@ -127,13 +127,8 @@ class SignupScreen extends StatelessWidget {
   Widget _buildSignupButton(BuildContext context) {
     return Padding(
       padding: EdgeInsets.only(top: 10.0),
-      child: RaisedButton(
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(24),
-        ),
+      child: ElevatedButton(
         onPressed: () => _submitRegistration(context),
-        padding: EdgeInsets.all(12),
-        color: Colors.lightGreen,
         child: Text('Sign Up'.toUpperCase(),
             style: TextStyle(color: Colors.white)),
       ),

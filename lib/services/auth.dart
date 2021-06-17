@@ -39,7 +39,7 @@ class AuthService {
         return 'The password provided is too weak.';
       return e.message;
     } catch (e) {
-      return e.message;
+      return e.toString();
     }
   }
 
@@ -59,21 +59,20 @@ class AuthService {
         return 'Wrong password provided for that user.';
       return e.message;
     } catch (e) {
-      return e.message;
+      return e.toString();
     }
   }
 
   Future<String?> signInWithGoogle() async {
     try {
-      GoogleSignInAccount googleSignInAccount = await (_googleSignIn.signIn() as FutureOr<GoogleSignInAccount>);
-      GoogleSignInAuthentication googleAuth =
-          await googleSignInAccount.authentication;
-      final AuthCredential authCredential = GoogleAuthProvider.credential(
-          idToken: googleAuth.idToken, accessToken: googleAuth.accessToken);
+      final googleSignInAccount = await _googleSignIn.signIn();
+      final googleAuth = await googleSignInAccount?.authentication;
+      final authCredential = GoogleAuthProvider.credential(
+          idToken: googleAuth?.idToken, accessToken: googleAuth?.accessToken);
       await _firebaseAuth.signInWithCredential(authCredential);
       return null;
     } catch (e) {
-      return e.message;
+      return e.toString();
     }
   }
 }
