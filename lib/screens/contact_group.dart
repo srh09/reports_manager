@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-class ContactGroupsScreen extends StatelessWidget {
+class ContactGroupScreen extends StatelessWidget {
   static const routeName = '/contact-group';
 
   @override

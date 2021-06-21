@@ -5,6 +5,9 @@ class ReportScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container();
+    return Scaffold(
+      appBar: AppBar(title: Text('Report')),
+      body: Text('This is the body of the Report'),
+    );
   }
 }

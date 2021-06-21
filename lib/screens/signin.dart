@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:provider/provider.dart';
+import 'package:reports_manager/main.dart';
 
 import '../models/auth.dart';
 import '../utilities/helpers.dart';
@@ -119,7 +120,7 @@ class SigninScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     context.watch<AuthService>().user.listen((User? user) {
       if (user != null)
-        Navigator.pushReplacementNamed(context, JobsitesScreen.routeName);
+        Navigator.pushReplacementNamed(context, AppShell.routeName);
     });
 
     return Scaffold(

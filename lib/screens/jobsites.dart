@@ -2,6 +2,7 @@ import 'package:animations/animations.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:reports_manager/screens/jobsite.dart';
 import 'package:reports_manager/utilities/constants.dart';
 
 import '../models/auth.dart';
@@ -14,6 +15,7 @@ import '../services/auth.dart';
 var jobsitesList = [
   Jobsite(title: 'Jobsite Title 1', address: 'jobsite address 1'),
   Jobsite(title: 'Jobsite Title 2', address: 'jobsite address 2'),
+  Jobsite(title: 'Jobsite Title3', address: 'jobsite address 3'),
 ];
 
 class JobsitesScreen extends StatelessWidget {
@@ -26,9 +28,8 @@ class JobsitesScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    print('jobsites build called----');
     context.watch<AuthService>().user.listen((User? user) {
-      print('triggered-----');
-      print(user);
       if (user == null) {
         Navigator.of(context).pushNamedAndRemoveUntil(
           SigninScreen.routeName,
@@ -44,32 +45,15 @@ class JobsitesScreen extends StatelessWidget {
           _UserButton(),
         ],
       ),
-      drawer: Drawer(
-        child: ListView(
-          children: [
-            DrawerHeader(child: Text('Options')),
-            ListTile(
-              title: Text('Jobsites'),
-              onTap: () => Navigator.of(context)
-                  .pushReplacementNamed(JobsitesScreen.routeName),
-            ),
-            ListTile(
-              title: Text('Email Groups'),
-              onTap: () => Navigator.of(context)
-                  .pushReplacementNamed(ContactGroupsScreen.routeName),
-            ),
-          ],
-        ),
-      ),
       body: Padding(
         padding: const EdgeInsets.all(8.0),
         child: ListView.builder(
           itemCount: jobsitesList.length,
           itemBuilder: (context, index) {
-            final item = jobsitesList[index];
+            final jobsite = jobsitesList[index];
             return _OpenContainerWrapper(
               closedBuilder: (BuildContext _, VoidCallback openContainer) {
-                return _ExampleCard(openContainer: openContainer);
+                return _JobsiteCard(jobsite, openContainer);
               },
               transitionType: _transitionType,
               onClosed: _showMarkedAsDoneSnackbar,
@@ -81,19 +65,6 @@ class JobsitesScreen extends StatelessWidget {
   }
 }
 
-// Card(
-//               child: InkWell(
-//                 child: ListTile(
-//                   title: Text(item.title!),
-//                   subtitle: Text(item.address!),
-//                 ),
-//                 splashColor: Colors.blue.withAlpha(30),
-//                 onTap: () {
-//                   print('card tapped-------');
-//                 },
-//               ),
-//             );
-
 class _UserButton extends StatelessWidget {
   const _UserButton({Key? key}) : super(key: key);
 
@@ -101,9 +72,7 @@ class _UserButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return PopupMenuButton<UserOptions>(
       onSelected: (UserOptions selection) async {
-        print('onselected-----');
         if (selection == UserOptions.UserScreen) {
-          print('user screen pushed-----');
           Navigator.of(context).pushNamed(UserScreen.routeName);
         } else if (selection == UserOptions.Logout) {
           await context.read<AuthService>().signOut();
@@ -141,7 +110,7 @@ class _OpenContainerWrapper extends StatelessWidget {
     return OpenContainer<bool>(
       transitionType: transitionType,
       openBuilder: (BuildContext context, VoidCallback _) {
-        return const _DetailsPage();
+        return const JobsiteScreen();
       },
       onClosed: onClosed,
       tappable: false,
@@ -150,137 +119,52 @@ class _OpenContainerWrapper extends StatelessWidget {
   }
 }
 
-class _DetailsPage extends StatelessWidget {
-  const _DetailsPage({this.includeMarkAsDoneButton = true});
+class _JobsiteCard extends StatelessWidget {
+  const _JobsiteCard(this.jobsite, this.openContainer);
 
-  final bool includeMarkAsDoneButton;
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Details page'),
-        actions: <Widget>[
-          if (includeMarkAsDoneButton)
-            IconButton(
-              icon: const Icon(Icons.done),
-              onPressed: () => Navigator.pop(context, true),
-              tooltip: 'Mark as done',
-            )
-        ],
-      ),
-      body: ListView(
-        children: <Widget>[
-          Container(
-            color: Colors.black38,
-            height: 250,
-            child: Padding(
-              padding: const EdgeInsets.all(70.0),
-              child: Image.asset(
-                'assets/placeholder_image.png',
-              ),
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.all(20.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-                Text(
-                  'Title',
-                  style: Theme.of(context).textTheme.headline5!.copyWith(
-                        color: Colors.black54,
-                        fontSize: 30.0,
-                      ),
-                ),
-                const SizedBox(height: 10),
-                Text(
-                  loremIpsumParagraph,
-                  style: Theme.of(context).textTheme.bodyText2!.copyWith(
-                        color: Colors.black54,
-                        height: 1.5,
-                        fontSize: 16.0,
-                      ),
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _ExampleCard extends StatelessWidget {
-  const _ExampleCard({required this.openContainer});
-
+  final Jobsite jobsite;
   final VoidCallback openContainer;
 
   @override
   Widget build(BuildContext context) {
-    return _InkWellOverlay(
-      openContainer: openContainer,
+    return SizedBox(
       height: 300,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: <Widget>[
-          Expanded(
-            child: Container(
-              color: Colors.black38,
-              child: Center(
-                child: Image.asset(
-                  'assets/placeholder_image.png',
-                  width: 100,
+      child: InkWell(
+        onTap: openContainer,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: <Widget>[
+            Expanded(
+              child: Container(
+                color: Colors.black38,
+                child: Center(
+                  child: FlutterLogo(
+                    size: 100,
+                  ),
                 ),
               ),
             ),
-          ),
-          const ListTile(
-            title: Text('Title'),
-            subtitle: Text('Secondary text'),
-          ),
-          Padding(
-            padding: const EdgeInsets.only(
-              left: 16.0,
-              right: 16.0,
-              bottom: 16.0,
+            ListTile(
+              title: Text(jobsite.title),
+              subtitle: Text(jobsite.address),
             ),
-            child: Text(
-              'Lorem ipsum dolor sit amet, consectetur '
-              'adipiscing elit, sed do eiusmod tempor.',
-              style: Theme.of(context)
-                  .textTheme
-                  .bodyText2!
-                  .copyWith(color: Colors.black54),
+            Padding(
+              padding: const EdgeInsets.only(
+                left: 16.0,
+                right: 16.0,
+                bottom: 16.0,
+              ),
+              child: Text(
+                'Lorem ipsum dolor sit amet, consectetur '
+                'adipiscing elit, sed do eiusmod tempor.',
+                style: Theme.of(context)
+                    .textTheme
+                    .bodyText2!
+                    .copyWith(color: Colors.black54),
+              ),
             ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _InkWellOverlay extends StatelessWidget {
-  const _InkWellOverlay({
-    this.openContainer,
-    this.width,
-    this.height,
-    this.child,
-  });
-
-  final VoidCallback? openContainer;
-  final double? width;
-  final double? height;
-  final Widget? child;
-
-  @override
-  Widget build(BuildContext context) {
-    return SizedBox(
-      height: height,
-      width: width,
-      child: InkWell(
-        onTap: openContainer,
-        child: child,
+          ],
+        ),
       ),
     );
   }
